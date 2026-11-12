@@ -1,12 +1,9 @@
 <template>
-  <lightning-card
-    title="Sales &amp; Service KPIs"
-    icon-name="standard:dashboard"
-  >
+  <lightning-card title={labels.title} icon-name="standard:dashboard">
     <div class="kpi-body slds-is-relative">
       <template lwc:if={showSpinner}>
         <lightning-spinner
-          alternative-text="Loading KPIs..."
+          alternative-text={labels.loading}
           size="medium"
         ></lightning-spinner>
       </template>
@@ -28,7 +25,7 @@
         <div class="kpi-grid slds-p-around_medium">
           <div class="kpi-card kpi-card--blue">
             <div class="kpi-value">{kpiData.openCases}</div>
-            <div class="kpi-label">Open Cases</div>
+            <div class="kpi-label">{labels.openCases}</div>
             <lightning-icon
               icon-name="standard:case"
               size="small"
@@ -38,7 +35,7 @@
 
           <div class="kpi-card kpi-card--green">
             <div class="kpi-value">{pipelineFormatted}</div>
-            <div class="kpi-label">Open Pipeline</div>
+            <div class="kpi-label">{labels.openPipeline}</div>
             <lightning-icon
               icon-name="standard:opportunity"
               size="small"
@@ -48,7 +45,7 @@
 
           <div class="kpi-card kpi-card--orange">
             <div class="kpi-value">{kpiData.newLeadsThisMonth}</div>
-            <div class="kpi-label">New Leads (Month)</div>
+            <div class="kpi-label">{labels.newLeads}</div>
             <lightning-icon
               icon-name="standard:lead"
               size="small"
@@ -58,7 +55,7 @@
 
           <div class="kpi-card kpi-card--purple">
             <div class="kpi-value">{kpiData.leadConversionRate}%</div>
-            <div class="kpi-label">Lead Conversion Rate</div>
+            <div class="kpi-label">{labels.conversionRate}</div>
             <lightning-icon
               icon-name="utility:trending"
               size="small"
@@ -68,7 +65,7 @@
 
           <div class="kpi-card kpi-card--teal">
             <div class="kpi-value">{kpiData.closedWonThisMonth}</div>
-            <div class="kpi-label">Closed Won (Month)</div>
+            <div class="kpi-label">{labels.closedWon}</div>
             <lightning-icon
               icon-name="utility:check"
               size="small"
@@ -81,7 +78,7 @@
 
     <div slot="footer">
       <lightning-button
-        label="Refresh"
+        label={labels.refresh}
         icon-name="utility:refresh"
         onclick={handleRefresh}
         disabled={isRefreshing}
@@ -92,7 +89,7 @@
         <span
           class="slds-m-left_small slds-text-color_weak slds-text-body_small"
         >
-          Last updated:
+          {labels.lastUpdated}
           <lightning-formatted-date-time
             value={generatedAt}
             hour="2-digit"

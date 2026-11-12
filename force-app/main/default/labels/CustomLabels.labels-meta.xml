@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<CustomLabels xmlns="http://soap.sforce.com/2006/04/metadata">
+  <labels>
+    <fullName>KpiDashboard_Title</fullName>
+    <language>en_US</language>
+    <protected>false</protected>
+    <shortDescription>Card title of the KPI dashboard</shortDescription>
+    <value>Sales &amp; Service KPIs</value>
+  </labels>
+  <labels>
+    <fullName>KpiDashboard_Loading</fullName>
+    <language>en_US</language>
+    <protected>false</protected>
+    <shortDescription
+    >Spinner alternative text while KPIs load</shortDescription>
+    <value>Loading KPIs...</value>
+  </labels>
+  <labels>
+    <fullName>KpiDashboard_OpenCases</fullName>
+    <language>en_US</language>
+    <protected>false</protected>
+    <shortDescription>KPI label: cases that are not closed</shortDescription>
+    <value>Open Cases</value>
+  </labels>
+  <labels>
+    <fullName>KpiDashboard_OpenPipeline</fullName>
+    <language>en_US</language>
+    <protected>false</protected>
+    <shortDescription
+    >KPI label: sum of Amount on open opportunities</shortDescription>
+    <value>Open Pipeline</value>
+  </labels>
+  <labels>
+    <fullName>KpiDashboard_NewLeads</fullName>
+    <language>en_US</language>
+    <protected>false</protected>
+    <shortDescription
+    >KPI label: leads created this month that are not converted</shortDescription>
+    <value>New Leads This Month (Not Converted)</value>
+  </labels>
+  <labels>
+    <fullName>KpiDashboard_ConversionRate</fullName>
+    <language>en_US</language>
+    <protected>false</protected>
+    <shortDescription
+    >KPI label: converted leads over all leads created this month</shortDescription>
+    <value>Lead Conversion Rate (This Month)</value>
+  </labels>
+  <labels>
+    <fullName>KpiDashboard_ClosedWon</fullName>
+    <language>en_US</language>
+    <protected>false</protected>
+    <shortDescription
+    >KPI label: won opportunities with a close date this month</shortDescription>
+    <value>Closed Won (This Month)</value>
+  </labels>
+  <labels>
+    <fullName>KpiDashboard_Refresh</fullName>
+    <language>en_US</language>
+    <protected>false</protected>
+    <shortDescription>Refresh button label</shortDescription>
+    <value>Refresh</value>
+  </labels>
+  <labels>
+    <fullName>KpiDashboard_LastUpdated</fullName>
+    <language>en_US</language>
+    <protected>false</protected>
+    <shortDescription
+    >Prefix for the server time at which the KPIs were computed</shortDescription>
+    <value>Last updated:</value>
+  </labels>
+  <labels>
+    <fullName>KpiDashboard_ErrorTitle</fullName>
+    <language>en_US</language>
+    <protected>false</protected>
+    <shortDescription>Title of the error toast</shortDescription>
+    <value>Error loading KPIs</value>
+  </labels>
+  <labels>
+    <fullName>KpiDashboard_UnknownError</fullName>
+    <language>en_US</language>
+    <protected>false</protected>
+    <shortDescription
+    >Fallback error message when the server returns none</shortDescription>
+    <value>Unknown error loading KPI data.</value>
+  </labels>
+</CustomLabels>
