@@ -217,7 +217,7 @@ private class KpiDashboardControllerTest {
       Test.startTest();
       try {
         KpiDashboardController.getKpiData();
-      } catch (QueryException e) {
+      } catch (System.SecurityException e) {
         blocked = true;
       }
       Test.stopTest();
