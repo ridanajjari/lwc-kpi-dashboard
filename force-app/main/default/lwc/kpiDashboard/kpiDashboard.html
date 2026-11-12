@@ -1,66 +1,129 @@
 <template>
-    <lightning-card title="Sales &amp; Service KPIs" icon-name="standard:dashboard">
+  <lightning-card title={labels.title} icon-name="standard:dashboard">
+    <div class="kpi-body slds-is-relative">
+      <template lwc:if={showSpinner}>
+        <lightning-spinner
+          alternative-text={labels.loading}
+          size="medium"
+        ></lightning-spinner>
+      </template>
 
-        <template lwc:if={isLoading}>
-            <div class="slds-align_absolute-center slds-p-around_large">
-                <lightning-spinner alternative-text="Loading KPIs..." size="medium"></lightning-spinner>
-            </div>
-        </template>
-
-        <template lwc:if={hasError}>
-            <div class="slds-p-around_medium">
-                <lightning-icon icon-name="utility:error" variant="error" size="small"></lightning-icon>
-                <span class="slds-m-left_x-small slds-text-color_error">{errorMessage}</span>
-            </div>
-        </template>
-
-        <template lwc:if={hasData}>
-            <div class="kpi-grid slds-p-around_medium">
-
-                <div class="kpi-card kpi-card--blue">
-                    <div class="kpi-value">{kpiData.openCases}</div>
-                    <div class="kpi-label">Open Cases</div>
-                    <lightning-icon icon-name="standard:case" size="small" class="kpi-icon"></lightning-icon>
-                </div>
-
-                <div class="kpi-card kpi-card--green">
-                    <div class="kpi-value">{pipelineFormatted}</div>
-                    <div class="kpi-label">Open Pipeline</div>
-                    <lightning-icon icon-name="standard:opportunity" size="small" class="kpi-icon"></lightning-icon>
-                </div>
-
-                <div class="kpi-card kpi-card--orange">
-                    <div class="kpi-value">{kpiData.newLeadsThisMonth}</div>
-                    <div class="kpi-label">New Leads (Month)</div>
-                    <lightning-icon icon-name="standard:lead" size="small" class="kpi-icon"></lightning-icon>
-                </div>
-
-                <div class="kpi-card kpi-card--purple">
-                    <div class="kpi-value">{kpiData.leadConversionRate}%</div>
-                    <div class="kpi-label">Lead Conversion Rate</div>
-                    <lightning-icon icon-name="utility:trending" size="small" class="kpi-icon"></lightning-icon>
-                </div>
-
-                <div class="kpi-card kpi-card--teal">
-                    <div class="kpi-value">{kpiData.closedWonThisMonth}</div>
-                    <div class="kpi-label">Closed Won (Month)</div>
-                    <lightning-icon icon-name="utility:check" size="small" class="kpi-icon"></lightning-icon>
-                </div>
-
-            </div>
-        </template>
-
-        <div slot="footer">
-            <lightning-button
-                label="Refresh"
-                icon-name="utility:refresh"
-                onclick={handleRefresh}
-                variant="neutral">
-            </lightning-button>
-            <span class="slds-m-left_small slds-text-color_weak slds-text-body_small">
-                Last updated: {lastUpdated}
-            </span>
+      <template lwc:if={hasError}>
+        <div class="slds-p-around_medium">
+          <lightning-icon
+            icon-name="utility:error"
+            variant="error"
+            size="small"
+          ></lightning-icon>
+          <span class="slds-m-left_x-small slds-text-color_error"
+            >{errorMessage}</span
+          >
         </div>
+      </template>
 
-    </lightning-card>
+      <template lwc:if={hasData}>
+        <div class="kpi-grid slds-p-around_medium">
+          <div class="kpi-card kpi-card--blue">
+            <div class="kpi-value">
+              <lightning-formatted-number
+                value={kpiData.openCases}
+              ></lightning-formatted-number>
+            </div>
+            <div class="kpi-label">{labels.openCases}</div>
+            <lightning-icon
+              icon-name="standard:case"
+              size="small"
+              class="kpi-icon"
+            ></lightning-icon>
+          </div>
+
+          <div class="kpi-card kpi-card--green">
+            <div class="kpi-value">
+              <lightning-formatted-number
+                value={kpiData.pipelineValue}
+                format-style="currency"
+                currency-code={currencyCode}
+                currency-display-as="symbol"
+                maximum-fraction-digits="0"
+              ></lightning-formatted-number>
+            </div>
+            <div class="kpi-label">{labels.openPipeline}</div>
+            <lightning-icon
+              icon-name="standard:opportunity"
+              size="small"
+              class="kpi-icon"
+            ></lightning-icon>
+          </div>
+
+          <div class="kpi-card kpi-card--orange">
+            <div class="kpi-value">
+              <lightning-formatted-number
+                value={kpiData.newLeadsThisMonth}
+              ></lightning-formatted-number>
+            </div>
+            <div class="kpi-label">{labels.newLeads}</div>
+            <lightning-icon
+              icon-name="standard:lead"
+              size="small"
+              class="kpi-icon"
+            ></lightning-icon>
+          </div>
+
+          <div class="kpi-card kpi-card--purple">
+            <div class="kpi-value">
+              <lightning-formatted-number
+                value={conversionRatio}
+                format-style="percent"
+                maximum-fraction-digits="1"
+              ></lightning-formatted-number>
+            </div>
+            <div class="kpi-label">{labels.conversionRate}</div>
+            <lightning-icon
+              icon-name="utility:trending"
+              size="small"
+              class="kpi-icon"
+            ></lightning-icon>
+          </div>
+
+          <div class="kpi-card kpi-card--teal">
+            <div class="kpi-value">
+              <lightning-formatted-number
+                value={kpiData.closedWonThisMonth}
+              ></lightning-formatted-number>
+            </div>
+            <div class="kpi-label">{labels.closedWon}</div>
+            <lightning-icon
+              icon-name="utility:check"
+              size="small"
+              class="kpi-icon"
+            ></lightning-icon>
+          </div>
+        </div>
+      </template>
+    </div>
+
+    <div slot="footer">
+      <lightning-button
+        label={labels.refresh}
+        icon-name="utility:refresh"
+        onclick={handleRefresh}
+        disabled={isRefreshing}
+        variant="neutral"
+      >
+      </lightning-button>
+      <template lwc:if={generatedAt}>
+        <span
+          class="slds-m-left_small slds-text-color_weak slds-text-body_small"
+        >
+          {labels.lastUpdated}
+          <lightning-formatted-date-time
+            value={generatedAt}
+            hour="2-digit"
+            minute="2-digit"
+            second="2-digit"
+          ></lightning-formatted-date-time>
+        </span>
+      </template>
+    </div>
+  </lightning-card>
 </template>
