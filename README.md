@@ -88,7 +88,7 @@ After deploying, add the **KPI Dashboard** component to a Home page or App page 
 - **`@wire` + `refreshApex`** — the wired result is kept and refreshed on demand, bypassing the client-side cache of the `cacheable=true` method
 - **Truthful "Last updated"** — the server returns `generatedAt = System.now()`; the component shows that time, not the browser clock
 - **`@AuraEnabled(cacheable=true)`** — results are cached on the client by Lightning Data Service
-- **Security** — `with sharing` plus `WITH USER_MODE` on every query; a test runs as a Minimum Access user and expects a `QueryException`
+- **Security** — `with sharing` plus `WITH USER_MODE` on every query; a test runs as a Minimum Access user and expects a `System.SecurityException`
 - **SOQL** — aggregate query with `GROUP BY`, `IsWon`, `THIS_MONTH` date literals
 - **Internationalisation** — Custom Labels for every string, `lightning-formatted-number` with the user's currency (`@salesforce/i18n/currency`) and locale
 - **Styling** — CSS grid and SLDS global styling hooks (`--slds-g-color-*`) with fallbacks
@@ -101,9 +101,10 @@ After deploying, add the **KPI Dashboard** component to a Home page or App page 
 
 Status on 2026-11-12:
 
-- ✅ Apex tests written: 7 test methods in `KpiDashboardControllerTest` covering KPI counts and pipeline sum, `IsWon` + `THIS_MONTH` filtering (won deals closing last/next month excluded), leads created last month excluded, the converted/unconverted Lead aggregate (50% case), zero values on an empty data set, the server timestamp, and user-mode enforcement for a Minimum Access user.
+- ✅ Deployed to a Developer Edition org at API 68.0 (2026-11-12): all 16 components (Apex, LWC, Custom Labels, permission set) deployed without errors. The LWC is compiled by the platform on deploy, so this also checks the template and JavaScript.
+- ✅ Apex tests: 7/7 test methods in `KpiDashboardControllerTest` passing (the CLI reports "Tests Ran 8" because it also lists the `@TestSetup` method). They cover KPI counts and pipeline sum, `IsWon` + `THIS_MONTH` filtering (won deals closing last/next month excluded), leads created last month excluded, the converted/unconverted Lead aggregate (50% case), zero values on an empty data set, the server timestamp, and user-mode enforcement for a Minimum Access user.
+- ✅ Coverage measured in that run: `KpiDashboardController` 100%.
 - ✅ Offline checks passing: Apex parses (prettier-plugin-apex), ESLint, Prettier, XML well-formed, Jest: 5 tests passing (`npm run lint`, `npm run prettier:verify`, `npm run test:unit`).
-- ⏳ Apex test execution and coverage: pending run in a Developer Edition org.
 
 ---
 
