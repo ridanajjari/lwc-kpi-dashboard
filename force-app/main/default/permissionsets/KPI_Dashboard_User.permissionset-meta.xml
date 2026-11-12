@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <classAccesses>
+        <apexClass>KpiDashboardController</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <description
+  >Access to the KpiDashboardController Apex class. Queries run in user mode, so users also need read on Case, Lead, Opportunity and Opportunity.Amount.</description>
+    <hasActivationRequired>false</hasActivationRequired>
+    <label>KPI Dashboard User</label>
+</PermissionSet>
