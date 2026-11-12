@@ -18,6 +18,10 @@ public with sharing class KpiDashboardController {
     public Decimal leadConversionRate { get; set; }
     @AuraEnabled
     public Integer closedWonThisMonth { get; set; }
+    // When the server computed these values. With cacheable=true the client
+    // may serve a cached copy, so this is the truthful "last updated" time.
+    @AuraEnabled
+    public Datetime generatedAt { get; set; }
   }
 
   @AuraEnabled(cacheable=true)
@@ -76,6 +80,7 @@ public with sharing class KpiDashboardController {
       WITH USER_MODE
     ];
 
+    data.generatedAt = System.now();
     return data;
   }
 }

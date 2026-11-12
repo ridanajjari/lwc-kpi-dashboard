@@ -57,6 +57,10 @@ private class KpiDashboardControllerTest {
     Test.stopTest();
 
     Assert.isNotNull(data, 'KpiData should not be null');
+    Assert.isNotNull(
+      data.generatedAt,
+      'generatedAt should carry the server timestamp'
+    );
     Assert.areEqual(2, data.openCases, 'Should count 2 open cases');
     Assert.areEqual(
       2,
