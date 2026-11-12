@@ -51,3 +51,8 @@
 .kpi-card--teal {
   background: linear-gradient(135deg, #00a1cb, #0089ac);
 }
+
+/* Keeps room for the spinner before the first response arrives */
+.kpi-body {
+  min-height: 6rem;
+}
