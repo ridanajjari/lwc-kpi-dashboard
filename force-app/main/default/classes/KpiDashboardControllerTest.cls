@@ -118,6 +118,39 @@ private class KpiDashboardControllerTest {
   }
 
   @IsTest
+  static void testLeadAggregateSplitsConvertedAndUnconverted() {
+    // Convert one of the two setup leads: 1 unconverted + 1 converted = 50%
+    Lead toConvert = [SELECT Id FROM Lead WHERE FirstName = 'A' LIMIT 1];
+    LeadStatus convertedStatus = [
+      SELECT ApiName
+      FROM LeadStatus
+      WHERE IsConverted = TRUE
+      LIMIT 1
+    ];
+    Database.LeadConvert lc = new Database.LeadConvert();
+    lc.setLeadId(toConvert.Id);
+    lc.setConvertedStatus(convertedStatus.ApiName);
+    lc.setDoNotCreateOpportunity(true);
+    Database.LeadConvertResult result = Database.convertLead(lc);
+    Assert.isTrue(result.isSuccess(), 'Lead conversion should succeed');
+
+    Test.startTest();
+    KpiDashboardController.KpiData data = KpiDashboardController.getKpiData();
+    Test.stopTest();
+
+    Assert.areEqual(
+      1,
+      data.newLeadsThisMonth,
+      'Only the unconverted lead counts as a new lead'
+    );
+    Assert.areEqual(
+      50.0,
+      data.leadConversionRate,
+      'One converted out of two leads created this month is 50%'
+    );
+  }
+
+  @IsTest
   static void testLeadConversionRateIsZeroWithNoConvertedLeads() {
     Test.startTest();
     KpiDashboardController.KpiData data = KpiDashboardController.getKpiData();

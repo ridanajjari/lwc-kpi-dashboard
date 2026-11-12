@@ -1,6 +1,8 @@
 /**
  * Apex controller for the kpiDashboard LWC.
- * Returns aggregated metrics in a single callout to minimize SOQL usage.
+ * Returns all dashboard metrics in one Apex call (one server round trip)
+ * built from four SOQL queries: open cases, open pipeline, leads created
+ * this month grouped by IsConverted, and won opportunities this month.
  */
 public with sharing class KpiDashboardController {
   public class KpiData {
@@ -23,13 +25,6 @@ public with sharing class KpiDashboardController {
     // Open Cases
     data.openCases = [SELECT COUNT() FROM Case WHERE IsClosed = FALSE];
 
-    // New Leads this calendar month (THIS_MONTH uses the running user's time zone)
-    data.newLeadsThisMonth = [
-      SELECT COUNT()
-      FROM Lead
-      WHERE CreatedDate = THIS_MONTH AND IsConverted = FALSE
-    ];
-
     // Open pipeline value (Opportunities not Closed)
     AggregateResult pipeline = [
       SELECT SUM(Amount) total
@@ -38,17 +33,28 @@ public with sharing class KpiDashboardController {
     ];
     data.pipelineValue = (Decimal) pipeline.get('total') ?? 0;
 
-    // Lead conversion rate (converted / total) this month — as a %
-    Integer totalLeads = [
-      SELECT COUNT()
+    // Leads created this month (THIS_MONTH uses the running user's time
+    // zone), counted in one aggregate query grouped by IsConverted.
+    Integer convertedLeads = 0;
+    Integer unconvertedLeads = 0;
+    for (AggregateResult row : [
+      SELECT IsConverted, COUNT(Id) total
       FROM Lead
       WHERE CreatedDate = THIS_MONTH
-    ];
-    Integer convertedLeads = [
-      SELECT COUNT()
-      FROM Lead
-      WHERE CreatedDate = THIS_MONTH AND IsConverted = TRUE
-    ];
+      GROUP BY IsConverted
+    ]) {
+      Integer total = (Integer) row.get('total');
+      if ((Boolean) row.get('IsConverted')) {
+        convertedLeads = total;
+      } else {
+        unconvertedLeads = total;
+      }
+    }
+    Integer totalLeads = convertedLeads + unconvertedLeads;
+
+    // New leads this month that are not yet converted
+    data.newLeadsThisMonth = unconvertedLeads;
+    // Converted / all leads created this month, as a percentage
     data.leadConversionRate = totalLeads > 0
       ? (convertedLeads * 100.0 / totalLeads).setScale(1)
       : 0;
