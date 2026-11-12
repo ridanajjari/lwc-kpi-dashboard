@@ -1,16 +1,16 @@
-# LWC KPI Dashboard — Salesforce
+# LWC KPI Dashboard (Salesforce)
 
-A custom Lightning Web Component that displays five Sales & Service KPIs on a Salesforce Home Page or App Page — no AppExchange license needed.
-
----
-
-## Business Problem
-
-Out-of-the-box Salesforce dashboards require building reports first. This component gives managers a KPI snapshot directly on their home page. Values are loaded when the page opens and re-queried from the server when the user clicks **Refresh**; the footer shows the server time at which the displayed values were computed.
+A Lightning Web Component I built to show five Sales and Service KPIs on a Salesforce Home page or App page. No AppExchange license needed.
 
 ---
 
-## KPIs Displayed
+## What it does
+
+Standard Salesforce dashboards need reports built first. I wanted managers to get a quick KPI snapshot right on their home page instead. The values load when the page opens and are queried again from the server when the user clicks **Refresh**. The footer shows the server time at which the values were computed.
+
+---
+
+## KPIs
 
 All queries run `WITH USER_MODE` in a `with sharing` class, so the running user's sharing, object and field permissions apply. "This month" uses the SOQL `THIS_MONTH` date literal (running user's time zone).
 
@@ -22,9 +22,9 @@ All queries run `WITH USER_MODE` in a `with sharing` class, so the running user'
 | Lead Conversion Rate (This Month)    | Converted / all leads with `CreatedDate = THIS_MONTH`                          |
 | Closed Won (This Month)              | `Opportunity`, `IsWon = true`, `CloseDate = THIS_MONTH`                        |
 
-Both Lead figures come from one aggregate query (`COUNT(Id)` grouped by `IsConverted`), so the controller runs four SOQL queries per call.
+I get both Lead figures from one aggregate query (`COUNT(Id)` grouped by `IsConverted`), so the controller runs four SOQL queries per call.
 
-Note: `SUM(Amount)` is returned in the org's corporate currency and formatted with the running user's currency code. In single-currency orgs these are the same; in multi-currency orgs where they differ, the symbol may not match the amount.
+One thing to know about currency: `SUM(Amount)` comes back in the org's corporate currency, and I format it with the running user's currency code. In a single-currency org these are the same. In a multi-currency org where they differ, the symbol may not match the amount.
 
 ---
 
@@ -36,7 +36,7 @@ TODO: real screenshot
 
 ---
 
-## Project Structure
+## Project structure
 
 ```
 force-app/main/default/
@@ -57,7 +57,7 @@ force-app/main/default/
 
 ---
 
-## Deployment
+## Setup
 
 ```bash
 git clone https://github.com/ridanajjari/lwc-kpi-dashboard.git
@@ -68,9 +68,9 @@ sf org assign permset --name KPI_Dashboard_User --target-org my-org
 sf apex run test --target-org my-org --class-names KpiDashboardControllerTest --code-coverage --result-format human --wait 30
 ```
 
-The permission set grants access to the Apex class only. Because the queries run in user mode, users also need read access to Case, Lead and Opportunity (including `Opportunity.Amount`) from their profile or another permission set.
+The permission set only gives access to the Apex class. Since the queries run in user mode, users also need read access to Case, Lead and Opportunity (including `Opportunity.Amount`) through their profile or another permission set.
 
-Local tooling (Node.js required):
+Local tooling (needs Node.js):
 
 ```bash
 npm install
@@ -79,38 +79,38 @@ npm run prettier:verify
 npm run test:unit
 ```
 
-After deploying, add the **KPI Dashboard** component to a Home page or App page via Lightning App Builder (Setup → Lightning App Builder).
+After deploying, add the **KPI Dashboard** component to a Home page or App page in Lightning App Builder (Setup → Lightning App Builder).
 
 ---
 
-## Key Salesforce Concepts Demonstrated
+## How it works
 
-- **`@wire` + `refreshApex`** — the wired result is kept and refreshed on demand, bypassing the client-side cache of the `cacheable=true` method
-- **Truthful "Last updated"** — the server returns `generatedAt = System.now()`; the component shows that time, not the browser clock
-- **`@AuraEnabled(cacheable=true)`** — results are cached on the client by Lightning Data Service
-- **Security** — `with sharing` plus `WITH USER_MODE` on every query; a test runs as a Minimum Access user and expects a `System.SecurityException`
-- **SOQL** — aggregate query with `GROUP BY`, `IsWon`, `THIS_MONTH` date literals
-- **Internationalisation** — Custom Labels for every string, `lightning-formatted-number` with the user's currency (`@salesforce/i18n/currency`) and locale
-- **Styling** — CSS grid and SLDS global styling hooks (`--slds-g-color-*`) with fallbacks
-- **`ShowToastEvent`** — user-facing error notification
-- **Testing** — Apex `@TestSetup`, `Test.setCreatedDate`, `Database.convertLead`, `System.runAs`; Jest with `createApexTestWireAdapter` and a mocked `refreshApex`
+- **`@wire` + `refreshApex`**: I keep the wired result and refresh it on demand, which bypasses the client-side cache of the `cacheable=true` method.
+- **"Last updated" from the server**: the server returns `generatedAt = System.now()` and the component shows that time, not the browser clock.
+- **`@AuraEnabled(cacheable=true)`**: results are cached on the client by Lightning Data Service.
+- **Security**: `with sharing` plus `WITH USER_MODE` on every query. One test runs as a Minimum Access user and expects a `System.SecurityException`.
+- **SOQL**: aggregate query with `GROUP BY`, `IsWon`, `THIS_MONTH` date literals.
+- **Internationalisation**: Custom Labels for every string, `lightning-formatted-number` with the user's currency (`@salesforce/i18n/currency`) and locale.
+- **Styling**: CSS grid and SLDS global styling hooks (`--slds-g-color-*`) with fallbacks.
+- **`ShowToastEvent`**: shows the user an error notification.
+- **Testing**: Apex `@TestSetup`, `Test.setCreatedDate`, `Database.convertLead`, `System.runAs`; Jest with `createApexTestWireAdapter` and a mocked `refreshApex`.
 
 ---
 
 ## Testing
 
-Status on 2026-11-12:
+I tested this on 12 Nov 2026 in a Developer Edition org (API 68.0).
 
-- ✅ Deployed to a Developer Edition org at API 68.0 (2026-11-12): all 16 components (Apex, LWC, Custom Labels, permission set) deployed without errors. The LWC is compiled by the platform on deploy, so this also checks the template and JavaScript.
-- ✅ Apex tests: 7/7 test methods in `KpiDashboardControllerTest` passing (the CLI reports "Tests Ran 8" because it also lists the `@TestSetup` method). They cover KPI counts and pipeline sum, `IsWon` + `THIS_MONTH` filtering (won deals closing last/next month excluded), leads created last month excluded, the converted/unconverted Lead aggregate (50% case), zero values on an empty data set, the server timestamp, and user-mode enforcement for a Minimum Access user.
-- ✅ Coverage measured in that run: `KpiDashboardController` 100%.
-- ✅ Offline checks passing: Apex parses (prettier-plugin-apex), ESLint, Prettier, XML well-formed, Jest: 5 tests passing (`npm run lint`, `npm run prettier:verify`, `npm run test:unit`).
+- Deploy: all 16 components (Apex, LWC, Custom Labels, permission set) deployed with no errors. The platform compiles the LWC on deploy, so this also checks the template and JavaScript.
+- Apex: 7 of 7 test methods in `KpiDashboardControllerTest` pass. The CLI says "Tests Ran 8" because it also counts the `@TestSetup` method. The tests cover KPI counts and the pipeline sum, `IsWon` + `THIS_MONTH` filtering (won deals closing last or next month are excluded), leads created last month being excluded, the converted/unconverted Lead aggregate (50% case), zero values on an empty data set, the server timestamp, and user-mode enforcement for a Minimum Access user.
+- Coverage in that run: `KpiDashboardController` 100%.
+- Offline checks pass: Apex parses (prettier-plugin-apex), ESLint, Prettier, XML is well-formed, and Jest runs 5 passing tests (`npm run lint`, `npm run prettier:verify`, `npm run test:unit`).
 
 ---
 
 ## Author
 
-**Rida Najjari** — Salesforce Consultant, Developer & Administrator
+**Rida Najjari**, Salesforce Consultant, Developer & Administrator
 
 4x Salesforce Certified: Platform Administrator · Platform App Builder · Platform Developer I · Associate
 
