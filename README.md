@@ -60,7 +60,7 @@ force-app/main/default/
 ## Deployment
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/lwc-kpi-dashboard.git
+git clone https://github.com/ridanajjari/lwc-kpi-dashboard.git
 cd lwc-kpi-dashboard
 sf org login web --alias my-org
 sf project deploy start --target-org my-org
