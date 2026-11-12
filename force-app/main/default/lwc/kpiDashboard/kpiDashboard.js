@@ -2,8 +2,33 @@ import { LightningElement, wire } from "lwc";
 import { refreshApex } from "@salesforce/apex";
 import { ShowToastEvent } from "lightning/platformShowToastEvent";
 import getKpiData from "@salesforce/apex/KpiDashboardController.getKpiData";
+import titleLabel from "@salesforce/label/c.KpiDashboard_Title";
+import loadingLabel from "@salesforce/label/c.KpiDashboard_Loading";
+import openCasesLabel from "@salesforce/label/c.KpiDashboard_OpenCases";
+import openPipelineLabel from "@salesforce/label/c.KpiDashboard_OpenPipeline";
+import newLeadsLabel from "@salesforce/label/c.KpiDashboard_NewLeads";
+import conversionRateLabel from "@salesforce/label/c.KpiDashboard_ConversionRate";
+import closedWonLabel from "@salesforce/label/c.KpiDashboard_ClosedWon";
+import refreshLabel from "@salesforce/label/c.KpiDashboard_Refresh";
+import lastUpdatedLabel from "@salesforce/label/c.KpiDashboard_LastUpdated";
+import errorTitleLabel from "@salesforce/label/c.KpiDashboard_ErrorTitle";
+import unknownErrorLabel from "@salesforce/label/c.KpiDashboard_UnknownError";
 
 export default class KpiDashboard extends LightningElement {
+  labels = {
+    title: titleLabel,
+    loading: loadingLabel,
+    openCases: openCasesLabel,
+    openPipeline: openPipelineLabel,
+    newLeads: newLeadsLabel,
+    conversionRate: conversionRateLabel,
+    closedWon: closedWonLabel,
+    refresh: refreshLabel,
+    lastUpdated: lastUpdatedLabel,
+    errorTitle: errorTitleLabel,
+    unknownError: unknownErrorLabel
+  };
+
   kpiData;
   errorMessage;
   isRefreshing = false;
@@ -39,12 +64,10 @@ export default class KpiDashboard extends LightningElement {
 
   showError(error) {
     this.errorMessage =
-      error?.body?.message ??
-      error?.message ??
-      "Unknown error loading KPI data.";
+      error?.body?.message ?? error?.message ?? this.labels.unknownError;
     this.dispatchEvent(
       new ShowToastEvent({
-        title: "Error loading KPIs",
+        title: this.labels.errorTitle,
         message: this.errorMessage,
         variant: "error"
       })
