@@ -12,13 +12,13 @@ Out-of-the-box Salesforce dashboards require report building and are slow to loa
 
 ## KPIs Displayed
 
-| Metric | Source |
-|--------|--------|
-| Open Cases | `Case` object, `IsClosed = false` |
-| Open Pipeline Value | `Opportunity`, not closed, sum of Amount |
-| New Leads This Month | `Lead`, created this calendar month, not converted |
-| Lead Conversion Rate % | Converted leads / total leads this month |
-| Closed Won This Month | `Opportunity`, `StageName = 'Closed Won'`, this month |
+| Metric                 | Source                                                |
+| ---------------------- | ----------------------------------------------------- |
+| Open Cases             | `Case` object, `IsClosed = false`                     |
+| Open Pipeline Value    | `Opportunity`, not closed, sum of Amount              |
+| New Leads This Month   | `Lead`, created this calendar month, not converted    |
+| Lead Conversion Rate % | Converted leads / total leads this month              |
+| Closed Won This Month  | `Opportunity`, `StageName = 'Closed Won'`, this month |
 
 ---
 
