@@ -1,52 +1,77 @@
-import { LightningElement, track } from "lwc";
+import { LightningElement, wire } from "lwc";
+import { refreshApex } from "@salesforce/apex";
 import { ShowToastEvent } from "lightning/platformShowToastEvent";
 import getKpiData from "@salesforce/apex/KpiDashboardController.getKpiData";
 
 export default class KpiDashboard extends LightningElement {
-  @track kpiData = null;
-  @track isLoading = true;
-  @track errorMessage = "";
-  @track lastUpdated = "";
+  kpiData;
+  errorMessage;
+  isRefreshing = false;
 
-  connectedCallback() {
-    this.fetchKpis();
+  // Full wire result (data + error), kept so refreshApex can re-run the wire.
+  wiredKpiResult;
+
+  @wire(getKpiData)
+  wiredKpis(result) {
+    this.wiredKpiResult = result;
+    const { data, error } = result;
+    if (data) {
+      this.kpiData = data;
+      this.errorMessage = undefined;
+    } else if (error) {
+      this.kpiData = undefined;
+      this.showError(error);
+    }
   }
 
-  fetchKpis() {
-    this.isLoading = true;
-    this.errorMessage = "";
-
-    getKpiData()
-      .then((data) => {
-        this.kpiData = data;
-        this.lastUpdated = new Date().toLocaleTimeString();
-      })
-      .catch((error) => {
-        this.errorMessage =
-          error?.body?.message ?? "Unknown error loading KPI data.";
-        this.dispatchEvent(
-          new ShowToastEvent({
-            title: "Error loading KPIs",
-            message: this.errorMessage,
-            variant: "error"
-          })
-        );
-      })
-      .finally(() => {
-        this.isLoading = false;
-      });
+  // refreshApex bypasses the client-side cache of the cacheable method and
+  // re-queries the server; the wire handler above receives the new value.
+  async handleRefresh() {
+    this.isRefreshing = true;
+    try {
+      await refreshApex(this.wiredKpiResult);
+    } catch (error) {
+      this.showError(error);
+    } finally {
+      this.isRefreshing = false;
+    }
   }
 
-  handleRefresh() {
-    this.fetchKpis();
+  showError(error) {
+    this.errorMessage =
+      error?.body?.message ??
+      error?.message ??
+      "Unknown error loading KPI data.";
+    this.dispatchEvent(
+      new ShowToastEvent({
+        title: "Error loading KPIs",
+        message: this.errorMessage,
+        variant: "error"
+      })
+    );
+  }
+
+  get isInitialLoad() {
+    return !this.kpiData && !this.errorMessage;
+  }
+
+  get showSpinner() {
+    return this.isInitialLoad || this.isRefreshing;
   }
 
   get hasData() {
-    return !this.isLoading && !this.errorMessage && this.kpiData !== null;
+    return !!this.kpiData && !this.errorMessage;
   }
 
   get hasError() {
-    return !this.isLoading && !!this.errorMessage;
+    return !!this.errorMessage;
+  }
+
+  // Server time at which the displayed values were computed (see
+  // KpiDashboardController.KpiData.generatedAt). A cached response keeps
+  // its original timestamp, which is the truthful "last updated" value.
+  get generatedAt() {
+    return this.kpiData?.generatedAt;
   }
 
   get pipelineFormatted() {
