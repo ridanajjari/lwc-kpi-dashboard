@@ -3,6 +3,8 @@
  * Returns all dashboard metrics in one Apex call (one server round trip)
  * built from four SOQL queries: open cases, open pipeline, leads created
  * this month grouped by IsConverted, and won opportunities this month.
+ * Every query runs WITH USER_MODE, so the running user's object and field
+ * permissions are enforced on top of the record sharing from 'with sharing'.
  */
 public with sharing class KpiDashboardController {
   public class KpiData {
@@ -23,13 +25,19 @@ public with sharing class KpiDashboardController {
     KpiData data = new KpiData();
 
     // Open Cases
-    data.openCases = [SELECT COUNT() FROM Case WHERE IsClosed = FALSE];
+    data.openCases = [
+      SELECT COUNT()
+      FROM Case
+      WHERE IsClosed = FALSE
+      WITH USER_MODE
+    ];
 
     // Open pipeline value (Opportunities not Closed)
     AggregateResult pipeline = [
       SELECT SUM(Amount) total
       FROM Opportunity
       WHERE IsClosed = FALSE
+      WITH USER_MODE
     ];
     data.pipelineValue = (Decimal) pipeline.get('total') ?? 0;
 
@@ -41,6 +49,7 @@ public with sharing class KpiDashboardController {
       SELECT IsConverted, COUNT(Id) total
       FROM Lead
       WHERE CreatedDate = THIS_MONTH
+      WITH USER_MODE
       GROUP BY IsConverted
     ]) {
       Integer total = (Integer) row.get('total');
@@ -64,6 +73,7 @@ public with sharing class KpiDashboardController {
       SELECT COUNT()
       FROM Opportunity
       WHERE IsWon = TRUE AND CloseDate = THIS_MONTH
+      WITH USER_MODE
     ];
 
     return data;
