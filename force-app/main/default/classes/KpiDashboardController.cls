@@ -23,12 +23,11 @@ public with sharing class KpiDashboardController {
     // Open Cases
     data.openCases = [SELECT COUNT() FROM Case WHERE IsClosed = FALSE];
 
-    // New Leads this calendar month
-    Date firstOfMonth = Date.today().toStartOfMonth();
+    // New Leads this calendar month (THIS_MONTH uses the running user's time zone)
     data.newLeadsThisMonth = [
       SELECT COUNT()
       FROM Lead
-      WHERE CreatedDate >= :firstOfMonth AND IsConverted = FALSE
+      WHERE CreatedDate = THIS_MONTH AND IsConverted = FALSE
     ];
 
     // Open pipeline value (Opportunities not Closed)
@@ -43,22 +42,22 @@ public with sharing class KpiDashboardController {
     Integer totalLeads = [
       SELECT COUNT()
       FROM Lead
-      WHERE CreatedDate >= :firstOfMonth
+      WHERE CreatedDate = THIS_MONTH
     ];
     Integer convertedLeads = [
       SELECT COUNT()
       FROM Lead
-      WHERE CreatedDate >= :firstOfMonth AND IsConverted = TRUE
+      WHERE CreatedDate = THIS_MONTH AND IsConverted = TRUE
     ];
     data.leadConversionRate = totalLeads > 0
       ? (convertedLeads * 100.0 / totalLeads).setScale(1)
       : 0;
 
-    // Closed Won this month
+    // Won this month: IsWon covers every won stage, whatever its label
     data.closedWonThisMonth = [
       SELECT COUNT()
       FROM Opportunity
-      WHERE StageName = 'Closed Won' AND CloseDate >= :firstOfMonth
+      WHERE IsWon = TRUE AND CloseDate = THIS_MONTH
     ];
 
     return data;

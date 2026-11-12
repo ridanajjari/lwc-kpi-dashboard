@@ -30,6 +30,18 @@ private class KpiDashboardControllerTest {
         Amount = 5000
       ),
       new Opportunity(
+        Name = 'Closed Won Last Month',
+        StageName = 'Closed Won',
+        CloseDate = Date.today().toStartOfMonth().addDays(-1),
+        Amount = 7000
+      ),
+      new Opportunity(
+        Name = 'Closed Won Next Month',
+        StageName = 'Closed Won',
+        CloseDate = Date.today().toStartOfMonth().addMonths(1),
+        Amount = 8000
+      ),
+      new Opportunity(
         Name = 'Closed Lost',
         StageName = 'Closed Lost',
         CloseDate = Date.today(),
@@ -60,6 +72,48 @@ private class KpiDashboardControllerTest {
       1,
       data.closedWonThisMonth,
       'Should count 1 Closed Won this month'
+    );
+  }
+
+  @IsTest
+  static void testClosedWonUsesIsWonAndThisMonth() {
+    // Setup has three won deals (last, this and next month) and one lost deal
+    // this month: only the won deal closing this month may be counted.
+    Test.startTest();
+    KpiDashboardController.KpiData data = KpiDashboardController.getKpiData();
+    Test.stopTest();
+
+    Assert.areEqual(
+      1,
+      data.closedWonThisMonth,
+      'Won deals closing last month or next month must be excluded'
+    );
+  }
+
+  @IsTest
+  static void testLeadsCreatedLastMonthAreExcluded() {
+    Lead oldLead = new Lead(
+      FirstName = 'C',
+      LastName = 'Old',
+      Company = 'Acme'
+    );
+    insert oldLead;
+    Test.setCreatedDate(
+      oldLead.Id,
+      Datetime.newInstance(
+        Date.today().toStartOfMonth().addDays(-1),
+        Time.newInstance(12, 0, 0, 0)
+      )
+    );
+
+    Test.startTest();
+    KpiDashboardController.KpiData data = KpiDashboardController.getKpiData();
+    Test.stopTest();
+
+    Assert.areEqual(
+      2,
+      data.newLeadsThisMonth,
+      'A lead created last month must not be counted'
     );
   }
 
