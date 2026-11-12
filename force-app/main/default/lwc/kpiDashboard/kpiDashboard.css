@@ -1,43 +1,53 @@
 .kpi-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 1rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 1rem;
 }
 
 .kpi-card {
-    position: relative;
-    border-radius: 8px;
-    padding: 1.2rem 1rem 1rem;
-    color: #fff;
-    min-height: 100px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+  position: relative;
+  border-radius: 8px;
+  padding: 1.2rem 1rem 1rem;
+  color: #fff;
+  min-height: 100px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .kpi-value {
-    font-size: 2rem;
-    font-weight: 700;
-    line-height: 1;
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1;
 }
 
 .kpi-label {
-    font-size: 0.8rem;
-    margin-top: 0.4rem;
-    opacity: 0.9;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
+  font-size: 0.8rem;
+  margin-top: 0.4rem;
+  opacity: 0.9;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 .kpi-icon {
-    position: absolute;
-    top: 0.75rem;
-    right: 0.75rem;
-    opacity: 0.35;
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  opacity: 0.35;
 }
 
-.kpi-card--blue   { background: linear-gradient(135deg, #0070d2, #005fb2); }
-.kpi-card--green  { background: linear-gradient(135deg, #04844b, #027843); }
-.kpi-card--orange { background: linear-gradient(135deg, #ff9a00, #e08000); }
-.kpi-card--purple { background: linear-gradient(135deg, #7b5ea7, #6a4d8e); }
-.kpi-card--teal   { background: linear-gradient(135deg, #00a1cb, #0089ac); }
+.kpi-card--blue {
+  background: linear-gradient(135deg, #0070d2, #005fb2);
+}
+.kpi-card--green {
+  background: linear-gradient(135deg, #04844b, #027843);
+}
+.kpi-card--orange {
+  background: linear-gradient(135deg, #ff9a00, #e08000);
+}
+.kpi-card--purple {
+  background: linear-gradient(135deg, #7b5ea7, #6a4d8e);
+}
+.kpi-card--teal {
+  background: linear-gradient(135deg, #00a1cb, #0089ac);
+}
