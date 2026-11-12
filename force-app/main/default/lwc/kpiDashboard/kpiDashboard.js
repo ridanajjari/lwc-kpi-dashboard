@@ -1,6 +1,7 @@
 import { LightningElement, wire } from "lwc";
 import { refreshApex } from "@salesforce/apex";
 import { ShowToastEvent } from "lightning/platformShowToastEvent";
+import USER_CURRENCY from "@salesforce/i18n/currency";
 import getKpiData from "@salesforce/apex/KpiDashboardController.getKpiData";
 import titleLabel from "@salesforce/label/c.KpiDashboard_Title";
 import loadingLabel from "@salesforce/label/c.KpiDashboard_Loading";
@@ -29,6 +30,8 @@ export default class KpiDashboard extends LightningElement {
     unknownError: unknownErrorLabel
   };
 
+  // ISO code of the running user's currency, used to format the pipeline.
+  currencyCode = USER_CURRENCY;
   kpiData;
   errorMessage;
   isRefreshing = false;
@@ -97,11 +100,9 @@ export default class KpiDashboard extends LightningElement {
     return this.kpiData?.generatedAt;
   }
 
-  get pipelineFormatted() {
-    if (!this.kpiData) return "$0";
-    const value = this.kpiData.pipelineValue ?? 0;
-    if (value >= 1_000_000) return "$" + (value / 1_000_000).toFixed(1) + "M";
-    if (value >= 1_000) return "$" + (value / 1_000).toFixed(0) + "K";
-    return "$" + value;
+  // lightning-formatted-number style="percent" expects a ratio (0.063),
+  // the server returns a percentage (6.3).
+  get conversionRatio() {
+    return (this.kpiData?.leadConversionRate ?? 0) / 100;
   }
 }

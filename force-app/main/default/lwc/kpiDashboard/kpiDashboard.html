@@ -24,7 +24,11 @@
       <template lwc:if={hasData}>
         <div class="kpi-grid slds-p-around_medium">
           <div class="kpi-card kpi-card--blue">
-            <div class="kpi-value">{kpiData.openCases}</div>
+            <div class="kpi-value">
+              <lightning-formatted-number
+                value={kpiData.openCases}
+              ></lightning-formatted-number>
+            </div>
             <div class="kpi-label">{labels.openCases}</div>
             <lightning-icon
               icon-name="standard:case"
@@ -34,7 +38,15 @@
           </div>
 
           <div class="kpi-card kpi-card--green">
-            <div class="kpi-value">{pipelineFormatted}</div>
+            <div class="kpi-value">
+              <lightning-formatted-number
+                value={kpiData.pipelineValue}
+                format-style="currency"
+                currency-code={currencyCode}
+                currency-display-as="symbol"
+                maximum-fraction-digits="0"
+              ></lightning-formatted-number>
+            </div>
             <div class="kpi-label">{labels.openPipeline}</div>
             <lightning-icon
               icon-name="standard:opportunity"
@@ -44,7 +56,11 @@
           </div>
 
           <div class="kpi-card kpi-card--orange">
-            <div class="kpi-value">{kpiData.newLeadsThisMonth}</div>
+            <div class="kpi-value">
+              <lightning-formatted-number
+                value={kpiData.newLeadsThisMonth}
+              ></lightning-formatted-number>
+            </div>
             <div class="kpi-label">{labels.newLeads}</div>
             <lightning-icon
               icon-name="standard:lead"
@@ -54,7 +70,13 @@
           </div>
 
           <div class="kpi-card kpi-card--purple">
-            <div class="kpi-value">{kpiData.leadConversionRate}%</div>
+            <div class="kpi-value">
+              <lightning-formatted-number
+                value={conversionRatio}
+                format-style="percent"
+                maximum-fraction-digits="1"
+              ></lightning-formatted-number>
+            </div>
             <div class="kpi-label">{labels.conversionRate}</div>
             <lightning-icon
               icon-name="utility:trending"
@@ -64,7 +86,11 @@
           </div>
 
           <div class="kpi-card kpi-card--teal">
-            <div class="kpi-value">{kpiData.closedWonThisMonth}</div>
+            <div class="kpi-value">
+              <lightning-formatted-number
+                value={kpiData.closedWonThisMonth}
+              ></lightning-formatted-number>
+            </div>
             <div class="kpi-label">{labels.closedWon}</div>
             <lightning-icon
               icon-name="utility:check"
