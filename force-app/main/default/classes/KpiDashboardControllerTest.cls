@@ -182,4 +182,46 @@ private class KpiDashboardControllerTest {
       'Should be 0 conversion rate on empty org'
     );
   }
+
+  @IsTest
+  static void testUserModeBlocksUserWithoutObjectAccess() {
+    // A Minimum Access user has no read access to Case, Lead or Opportunity.
+    // In user mode the query must fail instead of silently running in
+    // system mode.
+    Profile minimumAccess = [
+      SELECT Id
+      FROM Profile
+      WHERE Name = 'Minimum Access - Salesforce'
+      LIMIT 1
+    ];
+    String uniqueName = 'kpi.min.' + Crypto.getRandomInteger() + '@example.com';
+    User restricted = new User(
+      Alias = 'kpimin',
+      Email = uniqueName,
+      Username = uniqueName,
+      LastName = 'Restricted',
+      ProfileId = minimumAccess.Id,
+      TimeZoneSidKey = 'GMT',
+      LocaleSidKey = 'en_US',
+      EmailEncodingKey = 'UTF-8',
+      LanguageLocaleKey = 'en_US'
+    );
+    insert restricted;
+
+    Boolean blocked = false;
+    System.runAs(restricted) {
+      Test.startTest();
+      try {
+        KpiDashboardController.getKpiData();
+      } catch (QueryException e) {
+        blocked = true;
+      }
+      Test.stopTest();
+    }
+
+    Assert.isTrue(
+      blocked,
+      'User mode should reject a user without object permissions'
+    );
+  }
 }
