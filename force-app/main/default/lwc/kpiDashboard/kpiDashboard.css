@@ -8,7 +8,13 @@
   position: relative;
   border-radius: 8px;
   padding: 1.2rem 1rem 1rem;
-  color: #fff;
+  color: var(--slds-g-color-on-accent-1, var(--lwc-colorTextInverse, #fff));
+  /* Subtle light-to-dark sheen over the card's palette colour */
+  background-image: linear-gradient(
+    135deg,
+    rgb(255 255 255 / 12%),
+    rgb(0 0 0 / 12%)
+  );
   min-height: 100px;
   display: flex;
   flex-direction: column;
@@ -37,19 +43,19 @@
 }
 
 .kpi-card--blue {
-  background: linear-gradient(135deg, #0070d2, #005fb2);
+  background-color: var(--slds-g-color-palette-blue-40, #0070d2);
 }
 .kpi-card--green {
-  background: linear-gradient(135deg, #04844b, #027843);
+  background-color: var(--slds-g-color-palette-green-40, #04844b);
 }
 .kpi-card--orange {
-  background: linear-gradient(135deg, #ff9a00, #e08000);
+  background-color: var(--slds-g-color-palette-orange-40, #e08000);
 }
 .kpi-card--purple {
-  background: linear-gradient(135deg, #7b5ea7, #6a4d8e);
+  background-color: var(--slds-g-color-palette-purple-40, #7b5ea7);
 }
 .kpi-card--teal {
-  background: linear-gradient(135deg, #00a1cb, #0089ac);
+  background-color: var(--slds-g-color-palette-teal-40, #0089ac);
 }
 
 /* Keeps room for the spinner before the first response arrives */
